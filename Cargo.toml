@@ -5,6 +5,7 @@ authors = ["segleralex <segler_alex@web.de>"]
 repository = "https://github.com/segler-alex/playlist-decoder-rust"
 categories = ["multimedia::audio", "parsing"]
 license = "MIT"
+description = "a simple playlist decoder which supports: m3u, pls, asx and xspf"
 
 [dependencies]
 quick-xml = "*"
