@@ -8,4 +8,4 @@ license = "MIT"
 description = "a simple playlist decoder which supports: m3u, pls, asx and xspf"
 
 [dependencies]
-quick-xml = "*"
+quick-xml = "0.12.1"
