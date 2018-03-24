@@ -1,3 +1,5 @@
+//! Decode File and Title parts from simple playlist PLS files
+
 use std::collections::HashMap;
 
 pub struct PlaylistItem {
@@ -5,7 +7,7 @@ pub struct PlaylistItem {
     pub url: String,
 }
 
-pub fn decode_playlist(content: &str) -> Vec<PlaylistItem> {
+pub fn decode(content: &str) -> Vec<PlaylistItem> {
     let lines = content.lines();
     let mut list = vec![];
     let mut found_pls = false;

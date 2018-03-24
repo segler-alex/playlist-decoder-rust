@@ -1,3 +1,7 @@
+//! This is a very simple url extractor for different kinds of playlist formats: M3U, PLS, ASX, XSPF
+//!
+//! It is not optimized yet and does create a lot of strings on the way.
+
 extern crate quick_xml;
 
 mod pls;
@@ -5,21 +9,50 @@ mod m3u;
 mod asx;
 mod xspf;
 
-pub fn decode_playlist(content: &str) -> Vec<String> {
+/// Decode playlist content string. It checks for M3U, PLS, XSPF and ASX content in the string.
+/// # Example
+/// ```rust
+/// let list = playlist_decoder::decode(r##"<?xml version="1.0" encoding="UTF-8"?>
+///    <playlist version="1" xmlns="http://xspf.org/ns/0/">
+///      <trackList>
+///        <track>
+///          <title>Nobody Move, Nobody Get Hurt</title>
+///          <creator>We Are Scientists</creator>
+///          <location>file:///mp3s/titel_1.mp3</location>
+///        </track>
+///        <track>
+///          <title>See The World</title>
+///          <creator>The Kooks</creator>
+///          <location>http://www.example.org/musik/world.ogg</location>
+///        </track>
+///      </trackList>
+///    </playlist>"##);
+/// assert!(list.len() == 2, "Did not find 2 urls in example");
+/// for item in list {
+///     println!("{:?}", item);
+/// }
+/// ```
+/// # Arguments
+/// * `content` - A string slice containing a playlist
+pub fn decode(content: &str) -> Vec<String> {
     let mut list: Vec<String> = vec![];
 
     match content.to_lowercase().find("<playlist"){
         Some(_)=>{
-            let xspf_items = xspf::decode_playlist(content);
+            let xspf_items = xspf::decode(content);
             for item in xspf_items {
-                list.push(item.url);
-                list.push(item.identifier);
+                if item.url != "" {
+                    list.push(item.url);
+                }
+                if item.identifier != "" {
+                    list.push(item.identifier);
+                }
             }
         }
         None =>{
             match content.to_lowercase().find("<asx"){
                 Some(_)=>{
-                    let pls_items = asx::decode_playlist(content);
+                    let pls_items = asx::decode(content);
                     for item in pls_items {
                         list.push(item.url);
                     }
@@ -27,13 +60,13 @@ pub fn decode_playlist(content: &str) -> Vec<String> {
                 None =>{
                     match content.to_lowercase().find("[playlist]"){
                         Some(_) => {
-                            let pls_items = pls::decode_playlist(content);
+                            let pls_items = pls::decode(content);
                             for item in pls_items {
                                 list.push(item.url);
                             }
                         }
                         None => {
-                            let m3u_items = m3u::decode_playlist(content);
+                            let m3u_items = m3u::decode(content);
                             for item in m3u_items {
                                 list.push(item.url);
                             }
@@ -46,13 +79,12 @@ pub fn decode_playlist(content: &str) -> Vec<String> {
     
     list
 }
-
 #[cfg(test)]
 mod tests {
     #[test]
     fn m3u() {
         use m3u;
-        let items = m3u::decode_playlist("http://this.is.an.example");
+        let items = m3u::decode("http://this.is.an.example");
         assert!(items.len() == 1);
         assert!(items[0].url == "http://this.is.an.example");
     }

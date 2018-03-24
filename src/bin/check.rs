@@ -11,7 +11,7 @@ fn main() {
             let mut contents = String::new();
             f.read_to_string(&mut contents)
                 .expect("something went wrong reading the file");
-            let list = playlist_decoder::decode_playlist(&contents);
+            let list = playlist_decoder::decode(&contents);
             for item in list {
                 println!("{:?}", item);
             }

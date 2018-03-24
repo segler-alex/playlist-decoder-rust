@@ -8,7 +8,7 @@ pub struct PlaylistItem {
     pub identifier: String,
 }
 
-pub fn decode_playlist(content: &str) -> Vec<PlaylistItem> {
+pub fn decode(content: &str) -> Vec<PlaylistItem> {
     let mut list = vec![];
     let mut item = PlaylistItem {
         title: String::from(""),

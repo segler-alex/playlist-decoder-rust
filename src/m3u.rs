@@ -1,8 +1,10 @@
+//! Extract urls from M3U playlist files
+
 pub struct PlaylistItem {
     pub url: String,
 }
 
-pub fn decode_playlist(content: &str) -> Vec<PlaylistItem> {
+pub fn decode(content: &str) -> Vec<PlaylistItem> {
     let lines = content.lines();
     let mut list = vec![];
     for line in lines {
