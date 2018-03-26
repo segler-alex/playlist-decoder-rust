@@ -9,6 +9,8 @@ mod m3u;
 mod asx;
 mod xspf;
 
+use std::collections::HashSet;
+
 /// Decode playlist content string. It checks for M3U, PLS, XSPF and ASX content in the string.
 /// # Example
 /// ```rust
@@ -35,17 +37,17 @@ mod xspf;
 /// # Arguments
 /// * `content` - A string slice containing a playlist
 pub fn decode(content: &str) -> Vec<String> {
-    let mut list: Vec<String> = vec![];
+    let mut set = HashSet::new();
 
     match content.to_lowercase().find("<playlist"){
         Some(_)=>{
             let xspf_items = xspf::decode(content);
             for item in xspf_items {
                 if item.url != "" {
-                    list.push(item.url);
+                    set.insert(item.url);
                 }
                 if item.identifier != "" {
-                    list.push(item.identifier);
+                    set.insert(item.identifier);
                 }
             }
         }
@@ -54,7 +56,7 @@ pub fn decode(content: &str) -> Vec<String> {
                 Some(_)=>{
                     let pls_items = asx::decode(content);
                     for item in pls_items {
-                        list.push(item.url);
+                        set.insert(item.url);
                     }
                 }
                 None =>{
@@ -62,13 +64,13 @@ pub fn decode(content: &str) -> Vec<String> {
                         Some(_) => {
                             let pls_items = pls::decode(content);
                             for item in pls_items {
-                                list.push(item.url);
+                                set.insert(item.url);
                             }
                         }
                         None => {
                             let m3u_items = m3u::decode(content);
                             for item in m3u_items {
-                                list.push(item.url);
+                                set.insert(item.url);
                             }
                         }
                     }
@@ -76,8 +78,8 @@ pub fn decode(content: &str) -> Vec<String> {
             }
         }
     }
-    
-    list
+    let v: Vec<String> = set.into_iter().collect();
+    v
 }
 #[cfg(test)]
 mod tests {
