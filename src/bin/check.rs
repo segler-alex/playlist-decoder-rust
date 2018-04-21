@@ -15,6 +15,7 @@ fn main() {
             for item in list {
                 println!("{:?}", item);
             }
+            println!("is_content_hls: {}", playlist_decoder::is_content_hls(&contents));
         }
         None => {
             println!("Call with 1 parameter");

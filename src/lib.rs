@@ -81,6 +81,17 @@ pub fn decode(content: &str) -> Vec<String> {
     let v: Vec<String> = set.into_iter().collect();
     v
 }
+
+pub fn is_content_hls(content: &str) -> bool {
+    if content.contains("EXT-X-STREAM-INF"){
+        return true;
+    }
+    if content.contains("EXT-X-TARGETDURATION"){
+        return true;
+    }
+    return false;
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
