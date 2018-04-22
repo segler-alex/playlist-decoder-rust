@@ -101,4 +101,28 @@ mod tests {
         assert!(items.len() == 1);
         assert!(items[0].url == "http://this.is.an.example");
     }
+
+    #[test]
+    fn pls() {
+        use pls;
+        let items = pls::decode("[playlist]
+File1=http://this.is.an.example
+Title1=mytitle
+        ");
+        assert!(items.len() == 1);
+        assert!(items[0].url == "http://this.is.an.example");
+        assert!(items[0].title == "mytitle");
+    }
+
+    #[test]
+    fn pls2() {
+        use pls;
+        let items = pls::decode("[playlist]
+File1=http://this.is.an.example
+Title=mytitle
+        ");
+        assert!(items.len() == 1);
+        assert!(items[0].url == "http://this.is.an.example");
+        assert!(items[0].title == "mytitle");
+    }
 }
