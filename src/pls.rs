@@ -17,7 +17,7 @@ pub fn decode(content: &str) -> Vec<PlaylistItem> {
     for line in lines {
         if line.starts_with("#") {
             continue;
-        } else if line.trim() == "[playlist]" {
+        } else if line.trim().to_lowercase() == "[playlist]" {
             found_pls = true;
         } else {
             if found_pls {

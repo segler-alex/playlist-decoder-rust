@@ -38,8 +38,9 @@ use std::collections::HashSet;
 /// * `content` - A string slice containing a playlist
 pub fn decode(content: &str) -> Vec<String> {
     let mut set = HashSet::new();
+    let content_small = content.to_lowercase();
 
-    match content.to_lowercase().find("<playlist"){
+    match content_small.find("<playlist"){
         Some(_)=>{
             let xspf_items = xspf::decode(content);
             for item in xspf_items {
@@ -52,7 +53,7 @@ pub fn decode(content: &str) -> Vec<String> {
             }
         }
         None =>{
-            match content.to_lowercase().find("<asx"){
+            match content_small.find("<asx"){
                 Some(_)=>{
                     let pls_items = asx::decode(content);
                     for item in pls_items {
@@ -60,7 +61,7 @@ pub fn decode(content: &str) -> Vec<String> {
                     }
                 }
                 None =>{
-                    match content.to_lowercase().find("[playlist]"){
+                    match content_small.find("[playlist]"){
                         Some(_) => {
                             let pls_items = pls::decode(content);
                             for item in pls_items {
@@ -118,6 +119,18 @@ Title1=mytitle
     fn pls2() {
         use pls;
         let items = pls::decode("[playlist]
+File1=http://this.is.an.example
+Title=mytitle
+        ");
+        assert!(items.len() == 1);
+        assert!(items[0].url == "http://this.is.an.example");
+        assert!(items[0].title == "mytitle");
+    }
+
+    #[test]
+    fn pls3() {
+        use pls;
+        let items = pls::decode("[Playlist]
 File1=http://this.is.an.example
 Title=mytitle
         ");
