@@ -39,7 +39,6 @@ use std::collections::HashSet;
 pub fn decode(content: &str) -> Vec<String> {
     let mut set = HashSet::new();
     let content_small = content.to_lowercase();
-
     match content_small.find("<playlist"){
         Some(_)=>{
             let xspf_items = xspf::decode(content);

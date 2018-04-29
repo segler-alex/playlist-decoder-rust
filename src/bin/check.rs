@@ -9,9 +9,10 @@ fn main() {
         Some(filename) => {
             let mut f = File::open(filename).expect("file not found");
             let mut contents = String::new();
-            f.read_to_string(&mut contents)
-                .expect("something went wrong reading the file");
-            let list = playlist_decoder::decode(&contents);
+            let bytes: Vec<u8> = f.bytes().map(|x| x.expect("Byte read error")).collect();
+            let out = String::from_utf8_lossy(&bytes);
+            let content = out.to_string();
+            let list = playlist_decoder::decode(&content);
             for item in list {
                 println!("{:?}", item);
             }

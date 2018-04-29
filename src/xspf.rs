@@ -75,13 +75,13 @@ pub fn decode(content: &str) -> Vec<PlaylistItem> {
             Ok(Event::Text(e)) => {
                 let path = xml_stack.join("/");
                 if path == "playlist/tracklist/track/title" {
-                    item.title = e.unescape_and_decode(&reader).expect("msg").clone();
+                    item.title = e.unescape_and_decode(&reader).unwrap_or(String::from("")).clone();
                 }
                 if path == "playlist/tracklist/track/location" {
-                    item.url = e.unescape_and_decode(&reader).expect("msg").clone();
+                    item.url = e.unescape_and_decode(&reader).expect("unable to decode url").clone();
                 }
                 if path == "playlist/tracklist/track/identifier" {
-                    item.identifier = e.unescape_and_decode(&reader).expect("msg").clone();
+                    item.identifier = e.unescape_and_decode(&reader).expect("unable to decode identitfier").clone();
                 }
             }
             Ok(Event::Eof) => break,

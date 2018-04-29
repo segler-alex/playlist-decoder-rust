@@ -72,7 +72,7 @@ pub fn decode(content: &str) -> Vec<PlaylistItem> {
             Ok(Event::Text(e)) => {
                 let path = xml_stack.join("/");
                 if path == "asx/entry/title" {
-                    item.title = e.unescape_and_decode(&reader).expect("msg").clone();
+                    item.title = e.unescape_and_decode(&reader).unwrap_or(String::from("")).clone();
                 }
             }
             Ok(Event::Eof) => break,
