@@ -7,8 +7,8 @@ use std::env;
 fn main() {
     match env::args().nth(1) {
         Some(filename) => {
-            let mut f = File::open(filename).expect("file not found");
-            let mut contents = String::new();
+            let f = File::open(filename).expect("file not found");
+            let contents = String::new();
             let bytes: Vec<u8> = f.bytes().map(|x| x.expect("Byte read error")).collect();
             let out = String::from_utf8_lossy(&bytes);
             let content = out.to_string();
