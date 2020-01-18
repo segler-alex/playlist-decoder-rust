@@ -12,10 +12,11 @@ fn main() {
             let bytes: Vec<u8> = f.bytes().map(|x| x.expect("Byte read error")).collect();
             let out = String::from_utf8_lossy(&bytes);
             let content = out.to_string();
-            let list = playlist_decoder::decode(&content);
+            let list = playlist_decoder::decode(&content).expect("Decode error");
             for item in list {
                 println!("{:?}", item);
             }
+            
             println!("is_content_hls: {}", playlist_decoder::is_content_hls(&contents));
         }
         None => {

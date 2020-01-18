@@ -10,6 +10,7 @@ mod asx;
 mod xspf;
 
 use std::collections::HashSet;
+use std::error::Error;
 
 /// Decode playlist content string. It checks for M3U, PLS, XSPF and ASX content in the string.
 /// # Example
@@ -28,7 +29,7 @@ use std::collections::HashSet;
 ///          <location>http://www.example.org/musik/world.ogg</location>
 ///        </track>
 ///      </trackList>
-///    </playlist>"##);
+///    </playlist>"##).unwrap();
 /// assert!(list.len() == 2, "Did not find 2 urls in example");
 /// for item in list {
 ///     println!("{:?}", item);
@@ -36,12 +37,12 @@ use std::collections::HashSet;
 /// ```
 /// # Arguments
 /// * `content` - A string slice containing a playlist
-pub fn decode(content: &str) -> Vec<String> {
+pub fn decode(content: &str) -> Result<Vec<String>, Box<dyn Error>> {
     let mut set = HashSet::new();
     let content_small = content.to_lowercase();
     match content_small.find("<playlist"){
         Some(_)=>{
-            let xspf_items = xspf::decode(content);
+            let xspf_items = xspf::decode(content)?;
             for item in xspf_items {
                 if item.url != "" {
                     set.insert(item.url);
@@ -54,7 +55,7 @@ pub fn decode(content: &str) -> Vec<String> {
         None =>{
             match content_small.find("<asx"){
                 Some(_)=>{
-                    let pls_items = asx::decode(content);
+                    let pls_items = asx::decode(content)?;
                     for item in pls_items {
                         set.insert(item.url);
                     }
@@ -79,7 +80,7 @@ pub fn decode(content: &str) -> Vec<String> {
         }
     }
     let v: Vec<String> = set.into_iter().collect();
-    v
+    Ok(v)
 }
 
 pub fn is_content_hls(content: &str) -> bool {
@@ -96,16 +97,14 @@ pub fn is_content_hls(content: &str) -> bool {
 mod tests {
     #[test]
     fn m3u() {
-        use m3u;
-        let items = m3u::decode("http://this.is.an.example");
+        let items = crate::m3u::decode("http://this.is.an.example");
         assert!(items.len() == 1);
         assert!(items[0].url == "http://this.is.an.example");
     }
 
     #[test]
     fn pls() {
-        use pls;
-        let items = pls::decode("[playlist]
+        let items = crate::pls::decode("[playlist]
 File1=http://this.is.an.example
 Title1=mytitle
         ");
@@ -116,8 +115,7 @@ Title1=mytitle
 
     #[test]
     fn pls2() {
-        use pls;
-        let items = pls::decode("[playlist]
+        let items = crate::pls::decode("[playlist]
 File1=http://this.is.an.example
 Title=mytitle
         ");
@@ -128,8 +126,7 @@ Title=mytitle
 
     #[test]
     fn pls3() {
-        use pls;
-        let items = pls::decode("[Playlist]
+        let items = crate::pls::decode("[Playlist]
 File1=http://this.is.an.example
 Title=mytitle
         ");
