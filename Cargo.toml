@@ -9,4 +9,4 @@ description = "a simple playlist decoder which supports: m3u, pls, asx and xspf"
 edition = "2018"
 
 [dependencies]
-quick-xml = "0.20.0"
+quick-xml = "0.22.0"
