@@ -96,6 +96,58 @@ pub fn is_content_hls(content: &str) -> bool {
 #[cfg(test)]
 mod tests {
     #[test]
+    fn xspf() {
+        let s = r#"<?xml version="1.0" encoding="UTF-8"?>
+<playlist version="1" xmlns="http://xspf.org/ns/0/">
+    <trackList>
+    <track>
+        <title>Title</title>
+        <identifier>Identifier</identifier>
+        <location>http://this.is.an.example</location>
+    </track>
+    <track>
+        <title>Title2</title>
+        <identifier>Identifier2</identifier>
+        <location>http://this.is.an.example2</location>
+    </track>
+    </trackList>
+</playlist>"#;
+        let items = crate::xspf::decode(s);
+        assert!(items.is_ok());
+        let items = items.unwrap();
+        assert!(items.len() == 2);
+        assert!(items[0].url == "http://this.is.an.example");
+        assert!(items[0].title == "Title");
+        assert!(items[0].identifier == "Identifier");
+        assert!(items[1].url == "http://this.is.an.example2");
+        assert!(items[1].title == "Title2");
+        assert!(items[1].identifier == "Identifier2");
+    }
+
+    #[test]
+    fn asx() {
+        let s = r#"<asx version="3.0">
+  <title>Test-Liste</title>
+  <entry>
+    <title>title1</title>
+    <ref href="ref1"/>
+  </entry>
+  <entry>
+    <title>title2</title>
+    <ref href="ref2"/>
+  </entry>
+</asx>"#;
+        let items = crate::asx::decode(s);
+        assert!(items.is_ok());
+        let items = items.unwrap();
+        assert!(items.len() == 2);
+        assert!(items[0].url == "ref1");
+        assert!(items[0].title == "title1");
+        assert!(items[1].url == "ref2");
+        assert!(items[1].title == "title2");
+    }
+
+    #[test]
     fn m3u() {
         let items = crate::m3u::decode("http://this.is.an.example");
         assert!(items.len() == 1);
